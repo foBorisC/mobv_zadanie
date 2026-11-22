@@ -38,6 +38,11 @@ private enum class Difficulty(val label: String) {
     HARD("Hard")
 }
 
+private enum class QuestionType(val label: String) {
+    MULTIPLE_CHOICE("Multiple Choice (4 možnosti)"),
+    TRUE_FALSE("True / False")
+}
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +58,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun QuizLobby() {
     var selectedDifficulty by rememberSaveable { mutableStateOf(Difficulty.ANY) }
+    var selectedQuestionType by rememberSaveable { mutableStateOf(QuestionType.MULTIPLE_CHOICE) }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
@@ -67,25 +73,43 @@ private fun QuizLobby() {
             Text("Náročnosť", style = MaterialTheme.typography.titleMedium)
             Column(Modifier.selectableGroup()) {
                 Difficulty.entries.forEach { difficulty ->
-                    val isSelected = selectedDifficulty == difficulty
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 48.dp)
-                            .selectable(
-                                selected = isSelected,
-                                onClick = { selectedDifficulty = difficulty },
-                                role = Role.RadioButton
-                            ),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        RadioButton(selected = isSelected, onClick = null)
-                        Text(difficulty.label)
-                    }
+                    LobbyOption(
+                        label = difficulty.label,
+                        selected = selectedDifficulty == difficulty,
+                        onClick = { selectedDifficulty = difficulty }
+                    )
+                }
+            }
+            Text("Typ otázok", style = MaterialTheme.typography.titleMedium)
+            Column(Modifier.selectableGroup()) {
+                QuestionType.entries.forEach { questionType ->
+                    LobbyOption(
+                        label = questionType.label,
+                        selected = selectedQuestionType == questionType,
+                        onClick = { selectedQuestionType = questionType }
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun LobbyOption(label: String, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .selectable(
+                selected = selected,
+                onClick = onClick,
+                role = Role.RadioButton
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        RadioButton(selected = selected, onClick = null)
+        Text(label)
     }
 }
 
@@ -96,3 +120,4 @@ private fun QuizLobbyPreview() {
         QuizLobby()
     }
 }
+
