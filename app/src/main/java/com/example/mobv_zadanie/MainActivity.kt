@@ -29,6 +29,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.mobv_zadanie.data.local.ProfileSettingsDataSource
+import com.example.mobv_zadanie.data.repository.ProfileRepositoryImpl
+import com.example.mobv_zadanie.domain.repository.ProfileRepository
+import com.example.mobv_zadanie.ui.profile.ProfileRoute
 import com.example.mobv_zadanie.ui.theme.Mobv_zadanieTheme
 
 private enum class Difficulty(val label: String) {
@@ -44,12 +48,17 @@ private enum class QuestionType(val label: String) {
 }
 
 class MainActivity : ComponentActivity() {
+    private val profileRepository: ProfileRepository by lazy {
+        val dataSource = ProfileSettingsDataSource(applicationContext)
+        ProfileRepositoryImpl(dataSource)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             Mobv_zadanieTheme {
-                QuizLobby()
+                ProfileRoute(repository = profileRepository)
             }
         }
     }
